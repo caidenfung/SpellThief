@@ -20,6 +20,8 @@ public class PlayerInput : MonoBehaviour
     void Start()
     {
         playerSpellbook = GetComponent<Spellbook>();
+
+        GameManager.playerInput = this;
     }
 
     // Update is called once per frame
@@ -66,10 +68,12 @@ public class PlayerInput : MonoBehaviour
                 spellToCast = playerSpellbook.spellList[spellIndex];
                 selectedSpell = true;
             }
+            // add targeting here
             else
             {
                 Debug.Log("Cast " + spellToCast.name);
                 StartCoroutine(spellToCast.CastSpell(gameObject));
+                playerSpellbook.UpdateCastThisTurn();
                 selectedSpell = false;
             }
         }
