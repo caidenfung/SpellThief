@@ -30,6 +30,7 @@ public class Spellbook : MonoBehaviour
 
         if (castsThisTurn == castsPerTurn)
         {
+            castsThisTurn = 0;
             GameManager.UpdateTurnOrder();
         }
     }

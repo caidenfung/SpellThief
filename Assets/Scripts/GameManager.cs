@@ -33,6 +33,7 @@ public class GameManager : MonoBehaviour
 
     // Increment turn index (1 for player, then 1 more for every other unit
     // Make this an event?
+    // Right now this only accounts for 1 enemy at a time
     public static void UpdateTurnOrder()
     {
         if (playerTurn)
@@ -50,6 +51,6 @@ public class GameManager : MonoBehaviour
 
     static void HandleEnemyTurns()
     {
-
+        // for enemy in stage, call taketurn() from their enemybehavior script
     }
 }
