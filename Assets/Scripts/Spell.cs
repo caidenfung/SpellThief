@@ -6,33 +6,53 @@ public class Spell : MonoBehaviour
     public int maxCasts;
     private int remainingCasts;
 
-    // replace this with proper targeting
-    public GameObject target;
-
     public string targetType;
     public string effectType;
     public int effectValue;
     public string animateType;
     public float animateDuration;
+    public string description;
     //public int turnsActive;
 
-    private Animator animator;
+    private GameObject enemyFolder;
+
+    private SpellAnimator animator;
 
     void Start()
     {
         remainingCasts = maxCasts;
-        animator = GetComponent<Animator>();
+        animator = GetComponent<SpellAnimator>();
     }
 
-    public IEnumerator CastSpell(GameObject caster)
+    public IEnumerator CastSpell(GameObject caster, GameObject target)
     {
-        // player input set to false, set back to true at the end
-
+        enemyFolder = GameManager.instance.GetEnemyFolder();
+        animator = GetComponent<SpellAnimator>();
         // animate spell
-        yield return StartCoroutine(animator.AnimateSpell(animateDuration, caster, target, animateType));
+        yield return StartCoroutine(animator.AnimateSpell(animateDuration, caster, target, animateType, targetType));
 
-        // targets receive spell effects and have an animation
-            // maybe have a separate coroutine for this, that we can activate on separate targets?
+        // targets receive spell effects and should do a taken damage animation
+        if (targetType == "All Enemies" && caster.CompareTag("Player"))
+        {
+            for (int i = 0; i < enemyFolder.transform.childCount; i++)
+            {
+                SpellEffect(enemyFolder.transform.GetChild(i).gameObject);
+            }
+        }
+        else if (targetType == "Self")
+        {
+            SpellEffect(caster);
+        }
+        else
+        {
+            SpellEffect(target);
+        }
+
+        remainingCasts--;
+    }
+
+    void SpellEffect(GameObject target)
+    {
         if (effectType == "Damage")
         {
             target.GetComponent<HasHealth>().UpdateProtection(-effectValue);
@@ -41,7 +61,19 @@ public class Spell : MonoBehaviour
         {
             target.GetComponent<HasHealth>().UpdateProtection(effectValue);
         }
+        if (effectType == "Debuff Cast")
+        {
+            target.GetComponent<Spellbook>().IncrementCastsThisTurn(effectValue);
+        }
+    }
 
-        remainingCasts--;
+    public void CombineCasts(int numCasts)
+    {
+        remainingCasts += numCasts;
+    }
+
+    public int GetRemainingCasts()
+    {
+        return remainingCasts;
     }
 }

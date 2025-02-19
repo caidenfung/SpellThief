@@ -7,6 +7,8 @@ public class Spellbook : MonoBehaviour
     public int castsPerTurn = 1;
     private int castsThisTurn = 0;
 
+    private int emptySpellSlots = 0;
+
     // should be able to send out cast requests to spells
     // and receive add/remove spell requests to book
 
@@ -15,7 +17,13 @@ public class Spellbook : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        foreach (Spell spell in spellList)
+        {
+            if (spell == null)
+            {
+                emptySpellSlots++;
+            }
+        }
     }
 
     // Update is called once per frame
@@ -30,13 +38,52 @@ public class Spellbook : MonoBehaviour
 
         if (castsThisTurn == castsPerTurn)
         {
-            castsThisTurn = 0;
-            GameManager.UpdateTurnOrder();
+            if (gameObject.CompareTag("Player"))
+            {
+                ResetCastsThisTurn();
+                GameManager.UpdateTurnOrder();
+            }
         }
     }
     
     public int GetRemainingCasts()
     {
         return castsPerTurn - castsThisTurn;
+    }
+
+    public void ResetCastsThisTurn()
+    {
+        castsThisTurn = 0;
+    }
+
+    public void StealSpell(Spell spellToSteal)
+    {
+        bool matched = false;
+
+        foreach (Spell spell in spellList)
+        {
+            if (spell != null && spell.name == spellToSteal.name)
+            {
+                spell.CombineCasts(spellToSteal.GetRemainingCasts());
+                matched = true;
+                break;
+            }
+        }
+
+        if (!matched)
+        {
+            spellList[spellList.Count - emptySpellSlots] = spellToSteal;
+            emptySpellSlots--;
+        }
+    }
+
+    public void IncrementCastsThisTurn(int casts)
+    {
+        castsThisTurn += casts;
+    }
+
+    public int GetEmptySlots()
+    {
+        return emptySpellSlots;
     }
 }

@@ -27,9 +27,23 @@ public class HasHealth : MonoBehaviour
             current_hp += val;
         }
 
-        if (current_hp <= 0)
-        { 
+        if (current_hp <= 0 && alive)
+        {
+            current_hp = 0; // could remove this depending on possible spells we add
             alive = false;
+
+            if (gameObject.CompareTag("Enemy"))
+            {
+                gameObject.transform.rotation = Quaternion.Euler(0, 0, 270);
+                gameObject.transform.position += Vector3.down;
+                GameManager.instance.EnemyDefeated();
+            }
+            else if (gameObject.CompareTag("Player"))
+            {
+                gameObject.transform.rotation = Quaternion.Euler(0, 0, 90);
+                gameObject.transform.position += Vector3.down;
+                StartCoroutine(GameManager.instance.GameOver());
+            }
         }
     }
 

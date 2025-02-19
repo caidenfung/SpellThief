@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Animator : MonoBehaviour
+public class SpellAnimator : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -15,13 +15,27 @@ public class Animator : MonoBehaviour
         
     }
 
-    public IEnumerator AnimateSpell(float duration, GameObject caster, GameObject target, string animationType) 
+    public IEnumerator AnimateSpell(float duration, GameObject caster, GameObject target, string animationType, string targetType) 
     {
         Vector2 startPosition = caster.transform.position;
         Vector2 destination = target.transform.position;
 
+        Vector2 playerPosition = new Vector2(-4.5f, -3.5f);
+        Vector2 enemyPosition = new Vector2(4.5f, -3.5f);
+
         // instantiate sprite
         GameObject spellSprite = GameObject.Instantiate(gameObject, startPosition, Quaternion.identity);
+        if (targetType == "All Enemies")
+        {
+            if (caster.CompareTag("Player"))
+            {
+                spellSprite.transform.position = enemyPosition;
+            }
+            else
+            {
+                spellSprite.transform.position = playerPosition;
+            }
+        }
 
         if (animationType == "Projectile")
         {
@@ -34,6 +48,10 @@ public class Animator : MonoBehaviour
                 yield return null;
             }
             spellSprite.transform.position = destination;
+        }
+        else if (targetType == "Single Target")
+        {
+            spellSprite.transform.position = target.transform.position;
         }
         else
         {
