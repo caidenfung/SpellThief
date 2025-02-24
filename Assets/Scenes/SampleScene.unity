@@ -1544,8 +1544,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spellList:
-  - {fileID: 1446174562399618597, guid: 3fa09a04fd0c2134389915a9493f124b, type: 3}
-  - {fileID: 6620666020264753902, guid: 0f49d63f9b45b4d4eb2e3fae22e40f53, type: 3}
+  - {fileID: 1229214208}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   castsPerTurn: 2
@@ -1983,6 +1983,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0b23f9f3cd939954e87c552f864a26ab, type: 3}
+--- !u!114 &1229214208 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1446174562399618597, guid: 3fa09a04fd0c2134389915a9493f124b, type: 3}
+  m_PrefabInstance: {fileID: 2490804187264195290}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccd2055a41177bd46ad6761141fec553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1239475489
 GameObject:
   m_ObjectHideFlags: 0
@@ -3887,11 +3898,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6768413786237556252, guid: b596bd45bd410e84a8807f49c5bddd3e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -21.59
+      value: -16.28
       objectReference: {fileID: 0}
     - target: {fileID: 6768413786237556252, guid: b596bd45bd410e84a8807f49c5bddd3e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.0889647
+      value: -2.99
       objectReference: {fileID: 0}
     - target: {fileID: 6768413786237556252, guid: b596bd45bd410e84a8807f49c5bddd3e, type: 3}
       propertyPath: m_LocalPosition.z

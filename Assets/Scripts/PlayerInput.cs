@@ -1,6 +1,6 @@
-using Mono.Cecil.Cil;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerInput : MonoBehaviour
 {
@@ -10,10 +10,9 @@ public class PlayerInput : MonoBehaviour
     private int spellIndex = 0;
     private int targetIndex = 0;
 
-    private int selectionIndex = 0;
-
     private Spellbook playerSpellbook;
 
+    // TODO: Do we need these?
     private Spell spellToCast;
     private Spell spellToSteal;
 
@@ -26,7 +25,6 @@ public class PlayerInput : MonoBehaviour
 
     public float cooldownBetweenActions = 1.0f;
     private bool onCooldown = false;
-
     private bool paused = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -56,10 +54,8 @@ public class PlayerInput : MonoBehaviour
         selectedSpell = false;
         selectedEnemy = false;
 
-        // TODO: if a spell expires we need to make sure to move everything down (sort method)
+        // TODO LOW: if a spell expires we need to make sure to move everything down (sort method)
         // or we need to make sure the spell is pointed to a valid index at start of round
-
-        // TODO: dont need to set all of these each time, since we toggleCombat twice
         spellIndex = 0;
         if (inCombat)
         {
@@ -67,25 +63,6 @@ public class PlayerInput : MonoBehaviour
             ChangeSelection(1, "spell");
         }
         targetIndex = 0;
-        
-        selectionIndex = 0;
-}
-
-    public bool CheckInCombat()
-    {
-        return inCombat;
-    }
-
-    public string GetEnemyName()
-    {
-        if (enemyFolder != null)
-        {
-            return enemyFolder.transform.GetChild(targetIndex).name;
-        }
-        else
-        {
-            return "";
-        }
     }
 
     public void Pause(bool setting)
@@ -93,33 +70,30 @@ public class PlayerInput : MonoBehaviour
         paused = setting;
     }
 
+    // TODO: Separate ChangeSelection into changeSpell and changeTarget
     // Stages of selection in combat: Choosing a spell, then choosing target
     // Stages of selection after combat: Choosing a spell/campfire option
     // Other than those 2 things as well as esc/game over menu, player input should be disabled
     void HandlePlayerInput()
     {
+        // Determine whether A/D or left/right should change the spellIndex or targetIndex
+        string inputIndex;
+        if ((!selectedSpell && inCombat) || (selectedEnemy && !inCombat))
+        {
+            inputIndex = "spell";
+        }
+        else
+        {
+            inputIndex = "target";
+        }
+
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            if (!selectedSpell || selectedEnemy)
-            {
-                ChangeSelection(-1, "spell");
-            }
-            else
-            {
-                ChangeSelection(-1, "target");
-            }
-            
+            ChangeSelection(-1, inputIndex);
         }
         else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
         {
-            if (!selectedSpell || selectedEnemy)
-            {
-                ChangeSelection(1, "spell");
-            }
-            else
-            {
-                ChangeSelection(1, "target");
-            }
+            ChangeSelection(1, inputIndex);
         }
         else if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -136,11 +110,14 @@ public class PlayerInput : MonoBehaviour
                 selectedSpell = false;
             }
         }
+        else if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
     }
 
-    // TODO: Can probably make this more elegant
-        // Selecting a spell: based on what we've selected, use either playerspellbook or enemyspellbook
-        // Selecting a target: should overlap either way, but if we're out of combat we can select defeated enemies
+    // Selecting a spell: based on what we've selected, use either playerspellbook or enemyspellbook
+    // Selecting a target: should overlap either way, but if we're out of combat we can select defeated enemies
     // moveAmount should only be either -1 or 1
     public void ChangeSelection(int moveAmount, string selectionType)
     {
@@ -150,7 +127,6 @@ public class PlayerInput : MonoBehaviour
         if (selectionType == "spell")
         {
             Spellbook selectSpellbook;
-
             // Selecting spell we want to steal from
             if (!inCombat)
             {
@@ -214,16 +190,17 @@ public class PlayerInput : MonoBehaviour
             if (!selectedEnemy)
             {
                 selectedEnemy = true;
+                Debug.Log("Selected Enemy: " + selectedEnemy);
             }
             else
             {
                 // select a spell to steal
-                spellToSteal = enemyFolder.transform.GetChild(targetIndex).gameObject.GetComponent<Spellbook>().spellList[selectionIndex];
+                spellToSteal = enemyFolder.transform.GetChild(targetIndex).gameObject.GetComponent<Spellbook>().spellList[spellIndex];
 
                 // TODO: if no available slots, must select a spell to replace (do later)
                 if (playerSpellbook.GetEmptySlots() > 0)
                 {
-                    playerSpellbook.StealSpell(enemyFolder.transform.GetChild(targetIndex).gameObject.GetComponent<Spellbook>().spellList[selectionIndex]);
+                    playerSpellbook.StealSpell(enemyFolder.transform.GetChild(targetIndex).gameObject.GetComponent<Spellbook>().spellList[spellIndex]);
                     selectedEnemy = false;
                     // call stage manager
                     GameManager.instance.StageManager();
@@ -259,18 +236,17 @@ public class PlayerInput : MonoBehaviour
         }
 
         playerSpellbook.UpdateCastThisTurn();
-        // TODO: make sure this is ok
         selectedSpell = false;
         onCooldown = false;
     }
 
     public string GetSpell()
     {
-        if (spellToCast == null || !selectedSpell)
+        if (playerSpellbook.spellList[spellIndex] == null)
         {
-            return playerSpellbook.spellList[spellIndex].name;
+            return "None";
         }
-        return spellToCast.name;
+        return playerSpellbook.spellList[spellIndex].name;
     }
 
     public Spell GetSpellToCast()
@@ -280,11 +256,11 @@ public class PlayerInput : MonoBehaviour
 
     public Spell GetSpellToSteal()
     {
-        if (spellToSteal == null || !selectedEnemy)
+        if (enemyFolder.transform.GetChild(targetIndex).gameObject.GetComponent<Spellbook>().spellList[spellIndex] == null)
         {
-            return enemyFolder.transform.GetChild(targetIndex).gameObject.GetComponent<Spellbook>().spellList[selectionIndex];
+            return new Spell();
         }
-        return spellToSteal;
+        return enemyFolder.transform.GetChild(targetIndex).gameObject.GetComponent<Spellbook>().spellList[spellIndex];
     }
 
     public Transform GetTargetLocation()
@@ -300,6 +276,23 @@ public class PlayerInput : MonoBehaviour
     public bool GetSelectedSpell()
     {
         return selectedSpell;
+    }
+
+    public bool CheckInCombat()
+    {
+        return inCombat;
+    }
+
+    public string GetEnemyName()
+    {
+        if (enemyFolder != null)
+        {
+            return enemyFolder.transform.GetChild(targetIndex).name;
+        }
+        else
+        {
+            return "";
+        }
     }
 
     public string GetTarget()

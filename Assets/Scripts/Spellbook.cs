@@ -31,6 +31,15 @@ public class Spellbook : MonoBehaviour
                 spellList[i].SetSpellbook(this);
             }
         }
+
+        // TODO: If the player starts without any spells, raise a warning
+        if (GetEmptySlots() == spellList.Count && gameObject.CompareTag("Player"))
+        {
+            if (gameObject.GetComponent<PlayerInput>().CheckInCombat())
+            {
+                StartCoroutine(GameManager.instance.GameOver());
+            }
+        }
     }
 
     // TODO: Move updateturnorder around?
@@ -72,6 +81,8 @@ public class Spellbook : MonoBehaviour
                 // TODO: call replace spell selection here
                     // create UI event to prompt player to replace spell
                     // enable playerInput to select a spell to discard
+                        // probably create a new Spellbook Page temporarily, then delete it once finished
+                    // instead, create a separate replacement function and call it from PlayerInput
             }
             else
             {
@@ -100,11 +111,21 @@ public class Spellbook : MonoBehaviour
             }
         }
 
-        // TODO: is there a better way to do this
-        // TODO: Fix changeSelection
+        // If we're out of spells and we didn't win the fight, the game is over
+        // Otherwise, correct the spell index to the next available spell
         if (gameObject.CompareTag("Player"))
         {
-            gameObject.GetComponent<PlayerInput>().ChangeSelection(1, "spell");
+            if (GetEmptySlots() == spellList.Count)
+            {
+                if (gameObject.GetComponent<PlayerInput>().CheckInCombat())
+                {
+                    StartCoroutine(GameManager.instance.GameOver());
+                }
+            }
+            else
+            {
+                gameObject.GetComponent<PlayerInput>().ChangeSelection(1, "spell");
+            }
         }
     }
 

@@ -58,12 +58,6 @@ public class GameManager : MonoBehaviour
         // Set Scene Resolution?
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     // Creates new enemies in the stage, destroys the previous level of enemies, then reactivates combat
     public void StageManager()
     {
@@ -161,7 +155,6 @@ public class GameManager : MonoBehaviour
             else
             {
                 playerInput.ToggleInCombat();
-                playerInput.ChangeSelection(1, "target");
             }
         }
         // make sure at least 1 enemy is alive or we will crash

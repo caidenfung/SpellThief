@@ -121,7 +121,7 @@ public class TextScript : MonoBehaviour
         }
         else if (gameObject.name == "SpellDescriptor")
         {
-            if (player.CheckInCombat())
+            if (player.CheckInCombat() && spellbook.GetEmptySlots() != spellbook.spellList.Count)
             {
                 displayText.text = player.GetSpell() + "\nTargets: " + spellbook.spellList[player.GetSpellIndex()].targetType +  "\n" + spellbook.spellList[player.GetSpellIndex()].description;
             }
