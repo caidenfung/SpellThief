@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxCasts: 5
+  spellName: Engulfing Flames
   targetType: All Enemies
   effectType: Damage
   effectValue: 4

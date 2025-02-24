@@ -46,12 +46,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccd2055a41177bd46ad6761141fec553, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxCasts: 4
+  maxCasts: 5
+  spellName: Mana Shield
   targetType: Self
   effectType: Protection
   effectValue: 5
   animateType: Persists
-  animateDuration: 2
+  animateDuration: 1.5
   description: Grants 5 Protection to self.
 --- !u!212 &1721743588647342014
 SpriteRenderer:

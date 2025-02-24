@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEditor.VersionControl;
 
 public class Spellbook : MonoBehaviour
 {
@@ -18,15 +17,18 @@ public class Spellbook : MonoBehaviour
 
     void Start()
     {
-        foreach (Spell spell in spellList)
+        for (int i = 0; i < spellList.Count; i++)
         {
-            if (spell == null)
+            if (spellList[i] == null)
             {
                 emptySpellSlots++;
             }
             else
             {
-                spell.SetSpellbook(this);
+                Spell newSpell = Instantiate(spellList[i]);
+                newSpell.name = newSpell.spellName;
+                spellList[i] = newSpell;
+                spellList[i].SetSpellbook(this);
             }
         }
     }
@@ -62,13 +64,28 @@ public class Spellbook : MonoBehaviour
             }
         }
 
-        // Otherwise we add the spell
-        // TODO: Add a menu to replace spells
+        // Otherwise we add the spell to the spellbook
         if (!matched)
         {
-            spellList[spellList.Count - emptySpellSlots] = spellToSteal;
-            spellList[spellList.Count - emptySpellSlots].SetSpellbook(this);
-            emptySpellSlots--;
+            if (emptySpellSlots == 0)
+            {
+                // TODO: call replace spell selection here
+                    // create UI event to prompt player to replace spell
+                    // enable playerInput to select a spell to discard
+            }
+            else
+            {
+                for (int i = 0; i < spellList.Count; i++)
+                {
+                    if (spellList[i] == null)
+                    {
+                        spellList[i] = spellToSteal;
+                        spellList[i].SetSpellbook(this);
+                        emptySpellSlots--;
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -84,9 +101,10 @@ public class Spellbook : MonoBehaviour
         }
 
         // TODO: is there a better way to do this
+        // TODO: Fix changeSelection
         if (gameObject.CompareTag("Player"))
         {
-            gameObject.GetComponent<PlayerInput>().ChangeSelection(1);
+            gameObject.GetComponent<PlayerInput>().ChangeSelection(1, "spell");
         }
     }
 

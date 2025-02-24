@@ -151,8 +151,6 @@ public class GameManager : MonoBehaviour
     {
         enemiesToClear--;
 
-        playerInput.ChangeSelection(1);
-
         if (enemiesToClear == 0)
         {
             playerStage++;
@@ -163,7 +161,13 @@ public class GameManager : MonoBehaviour
             else
             {
                 playerInput.ToggleInCombat();
+                playerInput.ChangeSelection(1, "target");
             }
+        }
+        // make sure at least 1 enemy is alive or we will crash
+        else
+        {
+            playerInput.ChangeSelection(1, "target");
         }
     }
 
