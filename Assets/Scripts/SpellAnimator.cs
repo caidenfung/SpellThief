@@ -3,18 +3,6 @@ using UnityEngine;
 
 public class SpellAnimator : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public IEnumerator AnimateSpell(float duration, GameObject caster, GameObject target, string animationType, string targetType) 
     {
         Vector2 startPosition = caster.transform.position;

@@ -21,7 +21,9 @@ public class SpellDisplayer : MonoBehaviour
         }
         else
         {
-            gameObject.GetComponent<TextMeshProUGUI>().text = "Spellbook Page " + spellbookPage + ": " + spellbook.spellList[spellbookPage].name;
+            gameObject.GetComponent<TextMeshProUGUI>().text = "Spellbook Page " + spellbookPage + ": " 
+                + spellbook.spellList[spellbookPage].name + " " + spellbook.spellList[spellbookPage].GetRemainingCasts() 
+                + "/" + spellbook.spellList[spellbookPage].maxCasts;
         }
     }
 }

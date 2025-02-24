@@ -64,6 +64,14 @@ public class GameManager : MonoBehaviour
         
     }
 
+    // Creates new enemies in the stage, destroys the previous level of enemies, then reactivates combat
+    public void StageManager()
+    {
+        SetEnemiesForStage(false);
+        Destroy(enemyList.transform.GetChild(0).gameObject);
+        playerInput.ToggleInCombat();
+    }
+
     void SetEnemiesForStage(bool initial)
     {
         if (initial)
@@ -96,6 +104,9 @@ public class GameManager : MonoBehaviour
                 spawnLocation += Vector3.left * 2 * magnitude;
             }
         }
+
+        // TODO: We have this here but is there a better location for it?
+        playerInput.gameObject.GetComponent<Spellbook>().ResetCastsThisTurn();
 
         // instance.enemies = enemyFolder.transform.GetComponentsInChildren<GameObject>();
     }
@@ -136,19 +147,11 @@ public class GameManager : MonoBehaviour
         UpdateTurnOrder();
     }
 
-    public bool IsPlayerTurn()
-    {
-        return playerTurn;
-    }
-
-    public bool HasPlayerWon()
-    {
-        return playerWon;
-    }
-
     public void EnemyDefeated()
     {
         enemiesToClear--;
+
+        playerInput.ChangeSelection(1);
 
         if (enemiesToClear == 0)
         {
@@ -160,11 +163,11 @@ public class GameManager : MonoBehaviour
             else
             {
                 playerInput.ToggleInCombat();
-                Debug.Log("InCombat is " + playerInput.CheckInCombat());
             }
         }
     }
 
+    // TODO: make gamemanager call gameover
     public IEnumerator GameOver()
     {
         Debug.Log("Game lost");
@@ -198,20 +201,18 @@ public class GameManager : MonoBehaviour
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
-
     public GameObject GetEnemyFolder()
     {
         return instance.enemyFolder;
     }
 
-    public void StageManager()
+    public bool IsPlayerTurn()
     {
-        SetEnemiesForStage(false);
-        Destroy(enemyList.transform.GetChild(0).gameObject);
-        
-        Debug.Log("Destroyed index " + (playerStage - 1));
-        
-        playerInput.ToggleInCombat();
-        Debug.Log("InCombat is " + playerInput.CheckInCombat());
+        return playerTurn;
+    }
+
+    public bool HasPlayerWon()
+    {
+        return playerWon;
     }
 }

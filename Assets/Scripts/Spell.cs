@@ -6,6 +6,7 @@ public class Spell : MonoBehaviour
     public int maxCasts;
     private int remainingCasts;
 
+    public string spellName;
     public string targetType;
     public string effectType;
     public int effectValue;
@@ -18,16 +19,23 @@ public class Spell : MonoBehaviour
 
     private SpellAnimator animator;
 
+    private Spellbook spellbook;
+
     void Start()
     {
         remainingCasts = maxCasts;
         animator = GetComponent<SpellAnimator>();
     }
 
+    public void SetSpellbook(Spellbook book)
+    {
+        spellbook = book;
+    }
+
     public IEnumerator CastSpell(GameObject caster, GameObject target)
     {
         enemyFolder = GameManager.instance.GetEnemyFolder();
-        animator = GetComponent<SpellAnimator>();
+
         // animate spell
         yield return StartCoroutine(animator.AnimateSpell(animateDuration, caster, target, animateType, targetType));
 
@@ -48,7 +56,7 @@ public class Spell : MonoBehaviour
             SpellEffect(target);
         }
 
-        remainingCasts--;
+        UpdateRemainingCasts(-1);
     }
 
     void SpellEffect(GameObject target)
@@ -67,9 +75,14 @@ public class Spell : MonoBehaviour
         }
     }
 
-    public void CombineCasts(int numCasts)
+    public void UpdateRemainingCasts(int numCasts)
     {
         remainingCasts += numCasts;
+
+        if (remainingCasts <= 0)
+        {
+            spellbook.SpellExpires(this);
+        }
     }
 
     public int GetRemainingCasts()

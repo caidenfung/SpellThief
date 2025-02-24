@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEditor.VersionControl;
 
 public class Spellbook : MonoBehaviour
 {
@@ -9,12 +10,12 @@ public class Spellbook : MonoBehaviour
 
     private int emptySpellSlots = 0;
 
+    // TODO:
     // should be able to send out cast requests to spells
     // and receive add/remove spell requests to book
 
     // probably should manage spells that run out of uses here
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         foreach (Spell spell in spellList)
@@ -23,15 +24,15 @@ public class Spellbook : MonoBehaviour
             {
                 emptySpellSlots++;
             }
+            else
+            {
+                spell.SetSpellbook(this);
+            }
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    // TODO: Move updateturnorder around?
+    // Create a update function that checks if the current person moving is out of casts
     public void UpdateCastThisTurn()
     {
         castsThisTurn++;
@@ -45,38 +46,51 @@ public class Spellbook : MonoBehaviour
             }
         }
     }
-    
-    public int GetRemainingCasts()
-    {
-        return castsPerTurn - castsThisTurn;
-    }
-
-    public void ResetCastsThisTurn()
-    {
-        castsThisTurn = 0;
-    }
 
     public void StealSpell(Spell spellToSteal)
     {
         bool matched = false;
 
+        // Check if we already have this spell, if so we add the casts together
         foreach (Spell spell in spellList)
         {
             if (spell != null && spell.name == spellToSteal.name)
             {
-                spell.CombineCasts(spellToSteal.GetRemainingCasts());
+                spell.UpdateRemainingCasts(spellToSteal.GetRemainingCasts());
                 matched = true;
                 break;
             }
         }
 
+        // Otherwise we add the spell
+        // TODO: Add a menu to replace spells
         if (!matched)
         {
             spellList[spellList.Count - emptySpellSlots] = spellToSteal;
+            spellList[spellList.Count - emptySpellSlots].SetSpellbook(this);
             emptySpellSlots--;
         }
     }
 
+    public void SpellExpires(Spell expiredSpell)
+    {
+        for (int i = 0; i < spellList.Count; i++)
+        {
+            if (spellList[i] == expiredSpell)
+            {
+                spellList[i] = null;
+                emptySpellSlots++;
+            }
+        }
+
+        // TODO: is there a better way to do this
+        if (gameObject.CompareTag("Player"))
+        {
+            gameObject.GetComponent<PlayerInput>().ChangeSelection(1);
+        }
+    }
+
+    // When a Spell casts, increment number of casts this turn
     public void IncrementCastsThisTurn(int casts)
     {
         castsThisTurn += casts;
@@ -85,5 +99,15 @@ public class Spellbook : MonoBehaviour
     public int GetEmptySlots()
     {
         return emptySpellSlots;
+    }
+
+    public int GetRemainingCasts()
+    {
+        return castsPerTurn - castsThisTurn;
+    }
+
+    public void ResetCastsThisTurn()
+    {
+        castsThisTurn = 0;
     }
 }

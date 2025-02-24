@@ -1,3 +1,4 @@
+using Mono.Cecil.Cil;
 using System.Collections;
 using UnityEngine;
 
@@ -17,8 +18,10 @@ public class PlayerInput : MonoBehaviour
     private Spell spellToCast;
     private Spell spellToSteal;
 
+    // In combat: We select a spell, then select an enemy
     private bool selectedSpell = false;
-    private bool selectedSteal = false;
+    // Out of combat: We select an enemy, then select a spell
+    private bool selectedEnemy = false;
 
     private bool inCombat = true;
 
@@ -44,65 +47,7 @@ public class PlayerInput : MonoBehaviour
         if (!onCooldown && !paused)
         {
             HandlePlayerInput();
-        } 
-        else
-        {
-            Debug.Log("onCooldown is " + onCooldown);
-            Debug.Log("paused is" + paused);
         }
-    }
-
-    public string GetSpell()
-    {
-        if (spellToCast == null || !selectedSpell)
-        {
-            return playerSpellbook.spellList[spellIndex].name;
-        }
-        return spellToCast.name;
-    }
-
-    public Spell GetSpellToCast()
-    {
-        return spellToCast;
-    }
-
-    public Spell GetSpellToSteal()
-    {
-        if (spellToSteal == null || !selectedSteal)
-        {
-            return enemyFolder.transform.GetChild(enemyIndex).gameObject.GetComponent<Spellbook>().spellList[selectionIndex];
-        }
-        return spellToSteal;
-    }
-
-    public Transform GetTargetLocation()
-    {
-        return enemyFolder.transform.GetChild(targetIndex);
-    }
-
-    public int GetSpellIndex()
-    {
-        return spellIndex;
-    }
-
-    public bool GetSelectedSpell() 
-    { 
-        return selectedSpell; 
-    }
-
-    public string GetTarget()
-    {
-        if (!selectedSpell)
-        {
-            return "";
-        }
-
-        if (spellToCast.targetType == "Self" || spellToCast.targetType == "All Enemies")
-        {
-            return spellToCast.targetType;
-        }
-
-        return enemyFolder.transform.GetChild(targetIndex).name;
     }
 
     public void ToggleInCombat()
@@ -118,7 +63,7 @@ public class PlayerInput : MonoBehaviour
         selectionIndex = 0;
 
         selectedSpell = false;
-        selectedSteal = false;
+        selectedEnemy = false;
 }
 
     public bool CheckInCombat()
@@ -148,131 +93,164 @@ public class PlayerInput : MonoBehaviour
     // Other than those 2 things as well as esc/game over menu, player input should be disabled
     void HandlePlayerInput()
     {
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            if (!inCombat)
-            {
-                if (selectionIndex == 0)
-                {
-                    if (enemyIndex > 0)
-                    {
-                        enemyIndex--;
-                        selectionIndex = enemyFolder.transform.GetChild(enemyIndex).gameObject.GetComponent<Spellbook>().spellList.Count - 1;
-                    }
-                }
-                else
-                {
-                    selectionIndex--;
-                }
-            }
-            else if (!selectedSpell) {
-                if (spellIndex > 0)
-                {
-                    spellIndex--;
-                }
-            }
-            else if (spellToCast.targetType == "Single Target")
-            {
-                Debug.Log("Single Target A");
-                int moveToIndex = targetIndex - 1;
-                while (moveToIndex >= 0 && !enemyFolder.transform.GetChild(moveToIndex).GetComponent<HasHealth>().GetStatus())
-                {
-                    moveToIndex--;
-                }
-                if (moveToIndex >= 0)
-                {
-                    targetIndex = moveToIndex;
-                }
-            }
+            ChangeSelection(-1);
         }
-        else if (Input.GetKeyDown(KeyCode.D))
+        else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
         {
-            if (!inCombat)
-            {
-                if (selectionIndex == enemyFolder.transform.GetChild(enemyIndex).gameObject.GetComponent<Spellbook>().spellList.Count - 1)
-                {
-                    if (enemyIndex < enemyFolder.transform.childCount - 1)
-                    {
-                        enemyIndex++;
-                        selectionIndex = 0;
-                    }
-                }
-                else
-                {
-                    selectionIndex++;
-                }
-            }
-            else if (!selectedSpell)
-            {
-                if (spellIndex < playerSpellbook.spellList.Count && playerSpellbook.spellList[spellIndex + 1] != null)
-                {
-                    spellIndex++;
-                }
-            }
-            else if (spellToCast.targetType == "Single Target")
-            {
-                Debug.Log("Single Target D");
-                int moveToIndex = targetIndex + 1;
-                Debug.Log("target index: " + targetIndex);
-                Debug.Log("moveto index start: " + moveToIndex);
-                while (moveToIndex < enemyFolder.transform.childCount && !enemyFolder.transform.GetChild(moveToIndex).GetComponent<HasHealth>().GetStatus())
-                {
-                    moveToIndex++;
-                }
-                Debug.Log("moveto index: " + moveToIndex);
-                if (moveToIndex < enemyFolder.transform.childCount)
-                {
-                    targetIndex = moveToIndex;
-                }
-            }
+            ChangeSelection(1);
         }
         else if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (!inCombat)
+            MakeSelection();
+        }
+        else if (Input.GetKeyDown(KeyCode.Backspace))
+        {
+            if (selectedEnemy)
             {
-                if (!selectedSteal)
+                selectedEnemy = false;
+            }
+            else
+            {
+                selectedSpell = false;
+            }
+        }
+    }
+
+    // TODO: Implement combat, spell selection, etc as 1 phase?
+    // TODO: Call this after killing an enemy to "reset" targeting
+    // TODO: Can probably make this more elegant
+        // Selecting a spell: based on what we've selected, use either playerspellbook or enemyspellbook
+        // Selecting a target: should overlap either way
+    // moveAmount should only be either -1 or 1
+    public void ChangeSelection(int moveAmount)
+    {
+        bool isValid = false;
+
+        // Selecting a spell post combat (or other item)
+        // TODO: Create a step to select the enemy you want to steal from
+        if (!inCombat)
+        {
+            // Selecting the enemy we want to steal from 
+            if (!selectedEnemy)
+            {
+                enemyIndex += moveAmount;
+                if (enemyIndex == enemyFolder.transform.childCount)
                 {
-                    // select a spell to steal
-                    spellToSteal = enemyFolder.transform.GetChild(enemyIndex).gameObject.GetComponent<Spellbook>().spellList[selectionIndex];
-                    selectedSteal = true;
+                    enemyIndex = 0;
                 }
+                else if (enemyIndex < 0)
+                {
+                    enemyIndex = enemyFolder.transform.childCount - 1;
+                }
+
+                selectionIndex = 0;
+            }
+            // Selecting spell we want to steal from
+            else
+            {
+                Spellbook selectedEnemySpellbook = enemyFolder.transform.GetChild(enemyIndex).gameObject.GetComponent<Spellbook>();
+
+                selectionIndex += moveAmount;
+                if (selectionIndex == selectedEnemySpellbook.spellList.Count)
+                {
+                    selectionIndex = 0;
+                }
+                else if (selectionIndex < 0)
+                {
+                    selectionIndex = selectedEnemySpellbook.spellList.Count - 1;
+                }
+            }
+        }
+        // Selecting a spell
+        else if (!selectedSpell)
+        {
+            while (!isValid)
+            {
+                spellIndex += moveAmount;
+                if (spellIndex == playerSpellbook.spellList.Count)
+                {
+                    spellIndex = 0;
+                }
+                else if (spellIndex < 0)
+                {
+                    spellIndex = playerSpellbook.spellList.Count - 1;
+                }
+
+                if (playerSpellbook.spellList[spellIndex] != null)
+                {
+                    isValid = true;
+                }
+            }
+        }
+        // Selecting a spell's target
+        //else if (spellToCast.targetType == "Single Target")
+        else
+        {
+            // keep iterating until we find an enemy that is alive
+            while (!isValid)
+            {
+                targetIndex += moveAmount;
+                if (targetIndex == enemyFolder.transform.childCount)
+                {
+                    targetIndex = 0;
+                }
+                else if (targetIndex < 0)
+                {
+                    targetIndex = enemyFolder.transform.childCount - 1;
+                }
+
+                if (enemyFolder.transform.GetChild(targetIndex).GetComponent<HasHealth>().GetStatus())
+                {
+                    isValid = true;
+                }
+            }
+        }
+    }
+
+    // TODO: make this more elegant
+    void MakeSelection()
+    {
+        if (!inCombat)
+        {
+            if (!selectedEnemy)
+            {
+                selectedEnemy = true;
+            }
+            else
+            {
+                // select a spell to steal
+                spellToSteal = enemyFolder.transform.GetChild(enemyIndex).gameObject.GetComponent<Spellbook>().spellList[selectionIndex];
 
                 // TODO: if no available slots, must select a spell to replace (do later)
                 if (playerSpellbook.GetEmptySlots() > 0)
                 {
                     playerSpellbook.StealSpell(enemyFolder.transform.GetChild(enemyIndex).gameObject.GetComponent<Spellbook>().spellList[selectionIndex]);
-                    selectedSteal = false;
+                    selectedEnemy = false;
                     // call stage manager
                     GameManager.instance.StageManager();
                 }
-                else
-                {
-
-                }
-            }
-            else if (!selectedSpell)
-            {
-                spellToCast = playerSpellbook.spellList[spellIndex];
-                selectedSpell = true;
-                // TODO: change where this is?
-                enemyFolder = GameManager.instance.GetEnemyFolder();
-                Debug.Log("There are " + enemyFolder.transform.childCount + " Enemies");
-            }
-            else
-            {
-                StartCoroutine(HandlePlayerAction());
             }
         }
-        else if (Input.GetKeyDown(KeyCode.Backspace))
+        else if (!selectedSpell)
         {
-            selectedSpell = false;
+            spellToCast = playerSpellbook.spellList[spellIndex];
+            selectedSpell = true;
+
+            // TODO: change where this is?
+            enemyFolder = GameManager.instance.GetEnemyFolder();
+            Debug.Log("There are " + enemyFolder.transform.childCount + " Enemies");
+        }
+        else
+        {
+            StartCoroutine(HandlePlayerAction());
         }
     }
 
     IEnumerator HandlePlayerAction()
     {
         onCooldown = true;
-        selectedSpell = false;
 
         Debug.Log("Player casts " + spellToCast.name + "!");
         yield return StartCoroutine(spellToCast.CastSpell(gameObject, enemyFolder.transform.GetChild(targetIndex).gameObject));
@@ -284,6 +262,61 @@ public class PlayerInput : MonoBehaviour
         }
 
         playerSpellbook.UpdateCastThisTurn();
+        // TODO: make sure this is ok
+        selectedSpell = false;
         onCooldown = false;
+    }
+
+    public string GetSpell()
+    {
+        if (spellToCast == null || !selectedSpell)
+        {
+            return playerSpellbook.spellList[spellIndex].name;
+        }
+        return spellToCast.name;
+    }
+
+    public Spell GetSpellToCast()
+    {
+        return spellToCast;
+    }
+
+    public Spell GetSpellToSteal()
+    {
+        if (spellToSteal == null || !selectedEnemy)
+        {
+            return enemyFolder.transform.GetChild(enemyIndex).gameObject.GetComponent<Spellbook>().spellList[selectionIndex];
+        }
+        return spellToSteal;
+    }
+
+    public Transform GetTargetLocation()
+    {
+        return enemyFolder.transform.GetChild(targetIndex);
+    }
+
+    public int GetSpellIndex()
+    {
+        return spellIndex;
+    }
+
+    public bool GetSelectedSpell()
+    {
+        return selectedSpell;
+    }
+
+    public string GetTarget()
+    {
+        if (!selectedSpell)
+        {
+            return "";
+        }
+
+        if (spellToCast.targetType == "Self" || spellToCast.targetType == "All Enemies")
+        {
+            return spellToCast.targetType;
+        }
+
+        return enemyFolder.transform.GetChild(targetIndex).name;
     }
 }
