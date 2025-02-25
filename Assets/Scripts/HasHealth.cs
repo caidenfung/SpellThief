@@ -9,15 +9,24 @@ public class HasHealth : MonoBehaviour
 
     private bool alive;
 
+    private CharacterAnimator characterAnimator;
+
     void Start()
     {
         alive = true;
         current_hp = max_hp;
         current_protection = 0;
+        characterAnimator = GetComponent<CharacterAnimator>();
     }
 
     public void UpdateHealth(int val)
     {
+        // If the player takes damage, start a damage animation
+        if (val < 0)
+        {
+            //characterAnimator.OnDamageTaken();
+        }
+
         if (current_hp + val > max_hp)
         {
             current_hp = max_hp;

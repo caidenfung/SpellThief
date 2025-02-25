@@ -22,14 +22,15 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        if (instance == null)
+        if (instance != this && instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        else
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
-        }
-        else if (instance != this)
-        {
-            Destroy(gameObject);
         }
     }
 
@@ -53,35 +54,34 @@ public class GameManager : MonoBehaviour
         numStages = enemyList.transform.childCount;
 
         // Should do this for every stage
-        SetEnemiesForStage(true);
+        SetEnemiesForStage();
 
-        // Set Scene Resolution?
+        // Set Scene Resolution
+        Screen.SetResolution(1920, 1080, FullScreenMode.FullScreenWindow);
     }
 
     // Creates new enemies in the stage, destroys the previous level of enemies, then reactivates combat
     public void StageManager()
     {
-        SetEnemiesForStage(false);
-        Destroy(enemyList.transform.GetChild(0).gameObject);
+        foreach (Transform child in enemyFolder.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        SetEnemiesForStage();
+
         playerInput.ToggleInCombat();
     }
 
-    void SetEnemiesForStage(bool initial)
+    void SetEnemiesForStage()
     {
-        if (initial)
-        {
-            instance.enemyFolder = enemyList.transform.GetChild(0).gameObject;
-        }
-        else
-        {
-            instance.enemyFolder = enemyList.transform.GetChild(1).gameObject;
-        }
+        instance.enemyFolder = enemyList.transform.GetChild(playerStage).gameObject;
 
         Debug.Log("Create index " + (playerStage));
         instance.enemiesToClear = enemyFolder.transform.childCount;
         Debug.Log("Current stage: " + instance.enemyFolder.name);
 
-        Vector3 spawnLocation = new Vector2(4.5f, -2f);
+        Vector3 spawnLocation = new Vector2(5f, -3f);
         float magnitude = 2.5f;
         // TODO: this is almost all hard coded
         for (int i = 0; i < instance.enemyFolder.transform.childCount; i++)
@@ -101,12 +101,8 @@ public class GameManager : MonoBehaviour
 
         // TODO: We have this here but is there a better location for it?
         playerInput.gameObject.GetComponent<Spellbook>().ResetCastsThisTurn();
-
-        // instance.enemies = enemyFolder.transform.GetComponentsInChildren<GameObject>();
     }
 
-    // Increment turn index (1 for player, then 1 more for every other unit
-    // Make this an event?
     // if not player turn, playerInput.enabled = false and HandleEnemyTurns
     // otherwise, playerInput.enabled = true
     public static void UpdateTurnOrder()

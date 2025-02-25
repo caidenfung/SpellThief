@@ -4,7 +4,6 @@ using UnityEngine.SceneManagement;
 
 public class PlayerInput : MonoBehaviour
 {
-    // probably make a stage var, and also move this to gamemanager perhaps
     private GameObject enemyFolder;
 
     private int spellIndex = 0;
@@ -33,7 +32,6 @@ public class PlayerInput : MonoBehaviour
         playerSpellbook = GetComponent<Spellbook>();
 
         GameManager.playerInput = this;
-
         // TODO: change where this is?
         enemyFolder = GameManager.instance.GetEnemyFolder();
     }

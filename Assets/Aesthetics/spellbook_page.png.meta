@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 299b70d65d411e445a647bbecb04cf83
+guid: 17f7e3d02da4091439b7acb9f59a9432
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2522060532774993044
-    second: targeter_template_0
+      213: -8785368974129262382
+    second: spellbook_page_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: targeter_template_0
+      name: spellbook_page_0
       rect:
         serializedVersion: 2
-        x: 14
-        y: 55
-        width: 72
-        height: 10
+        x: 16
+        y: 10
+        width: 67
+        height: 83
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c630ae1de47dffcd0800000000000000
-      internalID: -2522060532774993044
+      spriteID: 2d099440779141680800000000000000
+      internalID: -8785368974129262382
       vertices: []
       indices: 
       edges: []
