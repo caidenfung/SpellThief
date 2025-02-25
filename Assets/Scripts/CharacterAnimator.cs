@@ -3,9 +3,8 @@ using UnityEngine;
 
 public class CharacterAnimator : MonoBehaviour
 {
-    public int numFlickers = 3;
-    public float intervalTime = 0.25f;
-
+    private int numFlickers = 3;
+    private float intervalTime = 0.1f;
     private SpriteRenderer characterSprite;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -20,7 +19,7 @@ public class CharacterAnimator : MonoBehaviour
         
     }
 
-    public void OnDamageTaken()
+    public IEnumerator OnDamageTaken()
     {
         for (int i = 0; i < numFlickers * 2; i++)
         {
@@ -29,7 +28,7 @@ public class CharacterAnimator : MonoBehaviour
 
             while (Time.time - startTime < intervalTime)
             {
-                continue;
+                yield return null;
             }
         }
 

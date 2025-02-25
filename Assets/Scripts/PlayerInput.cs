@@ -188,6 +188,7 @@ public class PlayerInput : MonoBehaviour
             if (!selectedEnemy)
             {
                 selectedEnemy = true;
+                EventBus.Publish<SelectedEnemy>(new SelectedEnemy(selectedEnemy));
                 Debug.Log("Selected Enemy: " + selectedEnemy);
             }
             else
@@ -200,6 +201,7 @@ public class PlayerInput : MonoBehaviour
                 {
                     playerSpellbook.StealSpell(enemyFolder.transform.GetChild(targetIndex).gameObject.GetComponent<Spellbook>().spellList[spellIndex]);
                     selectedEnemy = false;
+                    EventBus.Publish<SelectedEnemy>(new SelectedEnemy(selectedEnemy));
                     // call stage manager
                     GameManager.instance.StageManager();
                 }
@@ -306,5 +308,50 @@ public class PlayerInput : MonoBehaviour
         }
 
         return enemyFolder.transform.GetChild(targetIndex).name;
+    }
+}
+
+public class CombatStateChanged
+{
+    public bool inCombat;
+    public CombatStateChanged(bool _inCombat)
+    {
+        inCombat = _inCombat;
+    }
+}
+
+public class SelectedSpell
+{
+    public bool selectedSpell;
+    public SelectedSpell(bool _selectedSpell)
+    {
+        selectedSpell = _selectedSpell;
+    }
+}
+
+public class SelectedEnemy
+{
+    public bool selectedEnemy;
+    public SelectedEnemy(bool _selectedEnemy)
+    {
+        selectedEnemy = _selectedEnemy;
+    }
+}
+
+public class CurrentSpellIndex
+{
+    public int spellIndex;
+    public CurrentSpellIndex(int _spellIndex)
+    {
+        spellIndex = _spellIndex;
+    }
+}
+
+public class CurrentEnemyIndex
+{
+    public int enemyIndex;
+    public CurrentEnemyIndex(int _enemyIndex)
+    {
+        enemyIndex = _enemyIndex;
     }
 }

@@ -8,10 +8,14 @@ public class Targeter : MonoBehaviour
 
     Vector3 disappearPosition = new Vector2(50f, 50f);
 
+    Subscription<SelectedEnemy> selected_enemy_subscription;
+    bool selectedEnemy;
+
     // Update is called once per frame
     void Update()
     {
         // TODO: Change this to until the player has casted the spell
+        // TODO: Add targeter for selecting enemy for spell
         if (player.GetSelectedSpell())
         {
             if (player.GetSpellToCast().targetType == "Self")
@@ -38,9 +42,18 @@ public class Targeter : MonoBehaviour
 
             gameObject.transform.position += Vector3.up * offsetMagnitude;
         }
+        else if (!player.CheckInCombat())
+        {
+
+        }
         else
         {
             gameObject.transform.position = disappearPosition;
         }
+    }
+
+    void _OnPostCombatSpellSelection(SelectedEnemy selectedEnemy)
+    {
+
     }
 }

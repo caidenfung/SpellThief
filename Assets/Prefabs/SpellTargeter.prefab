@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7161729159624248649}
   - component: {fileID: 7712640644557387768}
   - component: {fileID: 8402743260053081638}
+  - component: {fileID: 3916766372097298208}
   m_Layer: 0
   m_Name: SpellTargeter
   m_TagString: Untagged
@@ -28,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -18.8, y: -4.54, z: -6.4513893}
-  m_LocalScale: {x: 2, y: 3, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -77,12 +78,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: -2522060532774993044, guid: 299b70d65d411e445a647bbecb04cf83, type: 3}
+  m_Sprite: {fileID: -765150924802650856, guid: 8b60ad0d150cd7c47b5cb29856596da4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.72, y: 0.1}
+  m_Size: {x: 0.41, y: 0.42}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -101,4 +102,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  offsetMagnitude: 1.5
+  offsetMagnitude: 2
+  targeterID: 0
+--- !u!114 &3916766372097298208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3072910120501111502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 617c821f9a39fb8448e1a6683e408589, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveVertical: 1
+  moveHorizontal: 0
+  magnitude: 0.25
+  speed: 3.5

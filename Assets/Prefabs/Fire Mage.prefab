@@ -162,4 +162,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numFlickers: 3
-  intervalTime: 0.25
+  intervalTime: 0.1

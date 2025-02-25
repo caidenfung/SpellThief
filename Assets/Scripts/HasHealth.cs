@@ -22,9 +22,9 @@ public class HasHealth : MonoBehaviour
     public void UpdateHealth(int val)
     {
         // If the player takes damage, start a damage animation
-        if (val < 0)
+        if (val < 0 && GetStatus())
         {
-            //characterAnimator.OnDamageTaken();
+            StartCoroutine(characterAnimator.OnDamageTaken());
         }
 
         if (current_hp + val > max_hp)
