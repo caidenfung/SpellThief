@@ -46,13 +46,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccd2055a41177bd46ad6761141fec553, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxCasts: 5
+  maxCasts: 6
   spellName: Engulfing Flames
   targetType: All Enemies
   effectType: Damage
   effectValue: 4
   animateType: Persists
-  animateDuration: 2
+  animateDuration: 1.5
   description: Deals 4 damage to all enemies.
 --- !u!212 &9097104863675740060
 SpriteRenderer:

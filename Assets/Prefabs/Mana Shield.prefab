@@ -53,7 +53,7 @@ MonoBehaviour:
   effectValue: 5
   animateType: Persists
   animateDuration: 1.5
-  description: Grants 5 Protection to self.
+  description: Grants 5 Protection for this turn only.
 --- !u!212 &1721743588647342014
 SpriteRenderer:
   m_ObjectHideFlags: 0

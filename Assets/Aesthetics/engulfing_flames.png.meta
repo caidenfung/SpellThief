@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      engulfing_flames_0: 2347571611924304062
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

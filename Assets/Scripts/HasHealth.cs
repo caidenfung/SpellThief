@@ -51,7 +51,7 @@ public class HasHealth : MonoBehaviour
             {
                 gameObject.transform.rotation = Quaternion.Euler(0, 0, 90);
                 gameObject.transform.position += Vector3.down;
-                StartCoroutine(GameManager.instance.GameOver());
+                StartCoroutine(GameManager.instance.GameOver("You were defeated..."));
             }
         }
     }
@@ -66,6 +66,11 @@ public class HasHealth : MonoBehaviour
             UpdateHealth(current_protection);
             current_protection = 0;
         }
+    }
+
+    public void SetProtection(int val)
+    {
+        current_protection = val;
     }
 
     public bool GetStatus()

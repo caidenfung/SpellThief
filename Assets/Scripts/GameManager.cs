@@ -32,6 +32,9 @@ public class GameManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
+
+        // Set Scene Resolution
+        Screen.SetResolution(1920, 1080, FullScreenMode.FullScreenWindow);
     }
 
     void OnEnable()
@@ -53,24 +56,27 @@ public class GameManager : MonoBehaviour
         playerStage = 0;
         numStages = enemyList.transform.childCount;
 
-        // Should do this for every stage
-        SetEnemiesForStage();
-
-        // Set Scene Resolution
-        Screen.SetResolution(1920, 1080, FullScreenMode.FullScreenWindow);
+        // Set up combat
+        EventBus.Publish<CurrentTurn>(new CurrentTurn(playerTurn));
+        StageManager();
     }
 
     // Creates new enemies in the stage, destroys the previous level of enemies, then reactivates combat
     public void StageManager()
     {
-        foreach (Transform child in enemyFolder.transform)
+        if (playerStage != 0)
         {
-            Destroy(child.gameObject);
+            foreach (Transform child in enemyFolder.transform)
+            {
+                Destroy(child.gameObject);
+            }
         }
 
         SetEnemiesForStage();
 
         playerInput.ToggleInCombat();
+
+        EventBus.Publish<StageNumber>(new StageNumber(playerStage));
     }
 
     void SetEnemiesForStage()
@@ -108,6 +114,8 @@ public class GameManager : MonoBehaviour
     public static void UpdateTurnOrder()
     {
         playerTurn = !playerTurn;
+        EventBus.Publish<CurrentTurn>(new CurrentTurn(playerTurn));
+        EventBus.Publish<EnemyTurnIndex>(new EnemyTurnIndex(-1));
 
         if (!playerTurn)
         {
@@ -118,6 +126,9 @@ public class GameManager : MonoBehaviour
         {
             playerInput.enabled = true;
             Debug.Log("It is now the Player's turn!");
+
+            // reset player protection
+            playerInput.gameObject.GetComponent<HasHealth>().SetProtection(0);
         }
     }
 
@@ -126,8 +137,11 @@ public class GameManager : MonoBehaviour
         // for enemy in stage, call taketurn() from their enemybehavior script
         for (int i = 0; i < instance.enemyFolder.transform.childCount; i++)
         {
+            EventBus.Publish<EnemyTurnIndex>(new EnemyTurnIndex(i));
+
             Transform enemy = instance.enemyFolder.transform.GetChild(i);
-            if (enemy.GetComponent<HasHealth>().GetStatus())
+            // TODO: do something if enemy is out of spells to cast
+            if (enemy.GetComponent<HasHealth>().GetStatus() && enemy.GetComponent<Spellbook>().GetEmptySlots() < enemy.GetComponent<Spellbook>().spellList.Count)
             {
                 Debug.Log(instance.enemyFolder.transform.GetChild(i).name + " is taking their turn");
                 yield return instance.StartCoroutine(enemy.GetComponent<EnemyBehavior>().TakeTurn());
@@ -161,20 +175,22 @@ public class GameManager : MonoBehaviour
     }
 
     // TODO: make gamemanager call gameover
-    public IEnumerator GameOver()
+    public IEnumerator GameOver(string message)
     {
         Debug.Log("Game lost");
-        instance.resultText.GetComponent<TextScript>().ToggleTextLocation();
 
         playerInput.Pause(true);
+        EventBus.Publish<GameEnded>(new GameEnded(message));
 
-        float initial_time = Time.time;
-        while (Time.time - initial_time < 2.0f)
+        while (true)
         {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+
             yield return null;
         }
-
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     IEnumerator Victory()
@@ -182,17 +198,18 @@ public class GameManager : MonoBehaviour
         Debug.Log("Game won");
         playerWon = true;
 
-        instance.resultText.GetComponent<TextScript>().ToggleTextLocation();
-
         playerInput.Pause(true);
+        EventBus.Publish<GameEnded>(new GameEnded("Congratulations! You beat the game!"));
 
-        float initial_time = Time.time;
-        while (Time.time - initial_time < 2.0f)
+        while (true)
         {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+
             yield return null;
         }
-
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
     public GameObject GetEnemyFolder()
     {
@@ -207,5 +224,41 @@ public class GameManager : MonoBehaviour
     public bool HasPlayerWon()
     {
         return playerWon;
+    }
+}
+
+public class CurrentTurn
+{
+    public bool isPlayerTurn;
+    public CurrentTurn(bool _isPlayerTurn)
+    {
+        isPlayerTurn = _isPlayerTurn;
+    }
+}
+
+public class EnemyTurnIndex
+{
+    public int enemyIndex;
+    public EnemyTurnIndex(int _enemyIndex)
+    {
+        enemyIndex = _enemyIndex;
+    }
+}
+
+public class StageNumber
+{
+    public int stageNum;
+    public StageNumber(int _stageNum)
+    {
+        stageNum = _stageNum;
+    }
+}
+
+public class GameEnded
+{
+    public string message;
+    public GameEnded(string _message)
+    {
+        message = _message;
     }
 }

@@ -576,6 +576,7 @@ PlayerSettings:
   webWasm2023: 0
   scriptingDefineSymbols:
     Standalone: EECS494HELPER
+    WebGL: EECS494HELPER
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

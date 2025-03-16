@@ -11,7 +11,6 @@ public class PlayerInput : MonoBehaviour
 
     private Spellbook playerSpellbook;
 
-    // TODO: Do we need these?
     private Spell spellToCast;
     private Spell spellToSteal;
 
@@ -19,6 +18,8 @@ public class PlayerInput : MonoBehaviour
     private bool selectedSpell = false;
     // Out of combat: We select an enemy, then select a spell
     private bool selectedEnemy = false;
+
+    private bool replaceSpell = false;
 
     private bool inCombat = true;
 
@@ -52,8 +53,9 @@ public class PlayerInput : MonoBehaviour
         selectedSpell = false;
         selectedEnemy = false;
 
-        // TODO LOW: if a spell expires we need to make sure to move everything down (sort method)
-        // or we need to make sure the spell is pointed to a valid index at start of round
+        replaceSpell = false;
+
+        // if a spell expires we need to make sure the spell is pointed to a valid index afterwards
         spellIndex = 0;
         if (inCombat)
         {
@@ -61,6 +63,18 @@ public class PlayerInput : MonoBehaviour
             ChangeSelection(1, "spell");
         }
         targetIndex = 0;
+
+        // heal player for next round
+        gameObject.GetComponent<HasHealth>().UpdateHealth(20);
+
+        // publish eventBus to represent changed Combat state and changed spellIndex/targetIndex
+        EventBus.Publish<SelectedSpell>(new SelectedSpell(selectedSpell));
+        EventBus.Publish<SelectedEnemy>(new SelectedEnemy(selectedEnemy));
+
+        EventBus.Publish<CurrentSpellIndex>(new CurrentSpellIndex(spellIndex));
+        EventBus.Publish<CurrentEnemyIndex>(new CurrentEnemyIndex(targetIndex));
+        EventBus.Publish<ReplacingSpell>(new ReplacingSpell(replaceSpell));
+        EventBus.Publish<CombatStateChanged>(new CombatStateChanged(inCombat));
     }
 
     public void Pause(bool setting)
@@ -76,7 +90,7 @@ public class PlayerInput : MonoBehaviour
     {
         // Determine whether A/D or left/right should change the spellIndex or targetIndex
         string inputIndex;
-        if ((!selectedSpell && inCombat) || (selectedEnemy && !inCombat))
+        if ((!selectedSpell && inCombat) || (selectedEnemy && !inCombat) || replaceSpell)
         {
             inputIndex = "spell";
         }
@@ -99,13 +113,21 @@ public class PlayerInput : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Backspace))
         {
-            if (selectedEnemy)
+            if (replaceSpell)
+            {
+                replaceSpell = false;
+                EventBus.Publish<ReplacingSpell>(new ReplacingSpell(replaceSpell));
+                playerSpellbook.spellList.RemoveAt(playerSpellbook.spellList.Count - 1);
+            }
+            else if (selectedEnemy)
             {
                 selectedEnemy = false;
+                EventBus.Publish<SelectedEnemy>(new SelectedEnemy(selectedEnemy));
             }
             else
-            {
+            {   
                 selectedSpell = false;
+                EventBus.Publish<SelectedSpell>(new SelectedSpell(selectedSpell));
             }
         }
         else if (Input.GetKeyDown(KeyCode.Escape))
@@ -126,7 +148,7 @@ public class PlayerInput : MonoBehaviour
         {
             Spellbook selectSpellbook;
             // Selecting spell we want to steal from
-            if (!inCombat)
+            if (!inCombat && !replaceSpell)
             {
                 selectSpellbook = enemyFolder.transform.GetChild(targetIndex).gameObject.GetComponent<Spellbook>();
             }
@@ -153,6 +175,8 @@ public class PlayerInput : MonoBehaviour
                     isValid = true;
                 }
             }
+
+            EventBus.Publish<CurrentSpellIndex>(new CurrentSpellIndex(spellIndex));
         }
         else if (selectionType == "target")
         //else if (spellToCast.targetType == "Single Target")
@@ -176,6 +200,8 @@ public class PlayerInput : MonoBehaviour
                     isValid = true;
                 }
             }
+
+            EventBus.Publish<CurrentEnemyIndex>(new CurrentEnemyIndex(targetIndex));
         }
         // TODO: else add a debug warning that input is not valid
     }
@@ -193,13 +219,40 @@ public class PlayerInput : MonoBehaviour
             }
             else
             {
-                // select a spell to steal
-                spellToSteal = enemyFolder.transform.GetChild(targetIndex).gameObject.GetComponent<Spellbook>().spellList[spellIndex];
-
-                // TODO: if no available slots, must select a spell to replace (do later)
-                if (playerSpellbook.GetEmptySlots() > 0)
+                // TODO: lots of code duplication here
+                if (!replaceSpell)
                 {
-                    playerSpellbook.StealSpell(enemyFolder.transform.GetChild(targetIndex).gameObject.GetComponent<Spellbook>().spellList[spellIndex]);
+                    // select a spell to steal
+                    spellToSteal = enemyFolder.transform.GetChild(targetIndex).gameObject.GetComponent<Spellbook>().spellList[spellIndex];
+
+                    // see if we already have the spell first
+                    if (playerSpellbook.CheckForMatch(spellToSteal))
+                    {
+                        selectedEnemy = false;
+                        EventBus.Publish<SelectedEnemy>(new SelectedEnemy(selectedEnemy));
+                        // call stage manager
+                        GameManager.instance.StageManager();
+                    }
+                    // if no available slots, must select a spell to replace
+                    else if (playerSpellbook.GetEmptySlots() == 0)
+                    {
+                        playerSpellbook.spellList.Add(spellToSteal);
+                        replaceSpell = true;
+                        EventBus.Publish<ReplacingSpell>(new ReplacingSpell(replaceSpell));
+                    }
+                    else
+                    {
+                        playerSpellbook.StealSpell(spellToSteal);
+                        selectedEnemy = false;
+                        EventBus.Publish<SelectedEnemy>(new SelectedEnemy(selectedEnemy));
+                        // call stage manager
+                        GameManager.instance.StageManager();
+                    }
+                }
+                else
+                {
+                    playerSpellbook.spellList[spellIndex] = playerSpellbook.spellList[playerSpellbook.spellList.Count - 1];
+                    playerSpellbook.spellList.RemoveAt(playerSpellbook.spellList.Count - 1);
                     selectedEnemy = false;
                     EventBus.Publish<SelectedEnemy>(new SelectedEnemy(selectedEnemy));
                     // call stage manager
@@ -211,6 +264,7 @@ public class PlayerInput : MonoBehaviour
         {
             spellToCast = playerSpellbook.spellList[spellIndex];
             selectedSpell = true;
+            EventBus.Publish<SelectedSpell>(new SelectedSpell(selectedSpell));
 
             // TODO: change where this is?
             enemyFolder = GameManager.instance.GetEnemyFolder();
@@ -237,6 +291,8 @@ public class PlayerInput : MonoBehaviour
 
         playerSpellbook.UpdateCastThisTurn();
         selectedSpell = false;
+        EventBus.Publish<SelectedSpell>(new SelectedSpell(selectedSpell));
+
         onCooldown = false;
     }
 
@@ -317,6 +373,16 @@ public class CombatStateChanged
     public CombatStateChanged(bool _inCombat)
     {
         inCombat = _inCombat;
+        Debug.Log("Published inCombat");
+    }
+}
+
+public class ReplacingSpell
+{
+    public bool replaceSpell;
+    public ReplacingSpell(bool _replaceSpell)
+    {
+        replaceSpell = _replaceSpell;
     }
 }
 

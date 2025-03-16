@@ -30,7 +30,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4487194021073176513}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -6, y: -3, z: 0.049548592}
   m_LocalScale: {x: 1.5, y: 1.2, z: 1}
   m_ConstrainProportionsScale: 0
@@ -81,12 +81,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
-  m_Sprite: {fileID: 4334783836991956000, guid: bac140d28bd736c489fae129af43217f, type: 3}
+  m_Sprite: {fileID: -8402930787357502864, guid: b835c81fef4f771478466424ac9fa90a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1.7, y: 2.06}
+  m_Size: {x: 1.46, y: 2.7}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -104,7 +104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 741544aa7ec360a48bbe4471ad6a0c00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  max_hp: 15
+  max_hp: 30
 --- !u!114 &1405333070730759942
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,7 +118,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spellList:
-  - {fileID: 0}
+  - {fileID: 1446174562399618597, guid: 3fa09a04fd0c2134389915a9493f124b, type: 3}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -148,7 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f2c1963fea971946b3324fb4960688b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textPrefab: {fileID: 0}
+  textPrefab: {fileID: 5806616426848062917, guid: 0d989b7b7092927418068d6ca2d84079, type: 3}
   offsetMagnitude: 2
 --- !u!114 &6056519212240735752
 MonoBehaviour:
@@ -162,5 +162,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15e95b686fb5ca749993dbc2f854ad36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numFlickers: 3
-  intervalTime: 0.1
+  turnSprite: {fileID: -8432550880190023967, guid: 880a620f95402af449d344d9cdfe98fe, type: 3}

@@ -7,7 +7,7 @@ public class SinWaveMovement : MonoBehaviour
     public float magnitude = 1;
     public float speed = 1;
 
-    void Update()
+    void LateUpdate()
     {
         Vector3 newPosition = Vector3.zero;
 
@@ -20,6 +20,6 @@ public class SinWaveMovement : MonoBehaviour
             newPosition.x = Mathf.Sin(Time.time * speed) * magnitude;
         }
 
-        transform.position += newPosition;
+        gameObject.transform.position += newPosition;
     }
 }

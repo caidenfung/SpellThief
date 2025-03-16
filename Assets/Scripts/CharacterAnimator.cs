@@ -3,20 +3,30 @@ using UnityEngine;
 
 public class CharacterAnimator : MonoBehaviour
 {
+    public Sprite turnSprite;
+
     private int numFlickers = 3;
     private float intervalTime = 0.1f;
     private SpriteRenderer characterSprite;
+    private Sprite defaultSprite;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         characterSprite = GetComponent<SpriteRenderer>();
+        defaultSprite = characterSprite.sprite;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ToggleSprite()
     {
-        
+        if (characterSprite.sprite == defaultSprite)
+        {
+            characterSprite.sprite = turnSprite;
+        }
+        else
+        {
+            characterSprite.sprite = defaultSprite;
+        }
     }
 
     public IEnumerator OnDamageTaken()

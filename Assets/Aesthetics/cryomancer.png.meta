@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 4a5fea826b75e0d41bfb6665dde8f42c
+guid: 36a01573a1eb7ff40a71a033d0bd06a2
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2003921890983029265
-    second: frost mage_0
+      213: -61740814147486778
+    second: cryomancer_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: frost mage_0
+      name: cryomancer_0
       rect:
         serializedVersion: 2
-        x: 71
-        y: 50
-        width: 170
-        height: 206
+        x: 115
+        y: 63
+        width: 146
+        height: 270
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 11a2ca5b75c5fcb10800000000000000
-      internalID: 2003921890983029265
+      spriteID: 6cb78908e07a42ff0800000000000000
+      internalID: -61740814147486778
       vertices: []
       indices: 
       edges: []
@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      cryomancer_0: -61740814147486778
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

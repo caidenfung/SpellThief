@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -21.59, y: -2.0889647, z: 0.052985363}
-  m_LocalScale: {x: 0.7, y: 0.5, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -49,11 +49,11 @@ MonoBehaviour:
   maxCasts: 5
   spellName: Entrap
   targetType: Single Target
-  effectType: Debuff Cast
+  effectType: Debuff Mana
   effectValue: 1
   animateType: Persists
   animateDuration: 1.5
-  description: Encase an enemy in ice, forcing them to skip their next spell cast.
+  description: The target is forced to skip their next spell cast.
 --- !u!212 &5809664800125879396
 SpriteRenderer:
   m_ObjectHideFlags: 0

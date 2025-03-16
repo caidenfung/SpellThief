@@ -21,12 +21,20 @@ public class PageDisplayer : MonoBehaviour
         page = parentHolder.spellbookPage;
         spellbook = parentHolder.spellbook;
 
+        if (page >= spellbook.spellList.Count)
+        {
+            return;
+        }
         targetSpell = spellbook.spellList[page];
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (page >= spellbook.spellList.Count)
+        {
+            return;
+        }
         targetSpell = spellbook.spellList[page];
 
         if (displayType == "remainingCasts")

@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7161729159624248649}
   - component: {fileID: 7712640644557387768}
-  - component: {fileID: 8402743260053081638}
   - component: {fileID: 3916766372097298208}
+  - component: {fileID: 2867864019496215639}
   m_Layer: 0
   m_Name: SpellTargeter
   m_TagString: Untagged
@@ -89,21 +89,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &8402743260053081638
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3072910120501111502}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c4350f070d49e7468e0bcd117471dfd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  offsetMagnitude: 2
-  targeterID: 0
 --- !u!114 &3916766372097298208
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -120,3 +105,18 @@ MonoBehaviour:
   moveHorizontal: 0
   magnitude: 0.25
   speed: 3.5
+--- !u!114 &2867864019496215639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3072910120501111502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c4350f070d49e7468e0bcd117471dfd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  offsetMagnitude: 2
+  targeterID: 0

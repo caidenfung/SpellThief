@@ -37,7 +37,7 @@ public class Spellbook : MonoBehaviour
         {
             if (gameObject.GetComponent<PlayerInput>().CheckInCombat())
             {
-                StartCoroutine(GameManager.instance.GameOver());
+                StartCoroutine(GameManager.instance.GameOver("You have no spells left..."));
             }
         }
     }
@@ -60,6 +60,20 @@ public class Spellbook : MonoBehaviour
 
     public void StealSpell(Spell spellToSteal)
     {
+        for (int i = 0; i < spellList.Count; i++)
+        {
+            if (spellList[i] == null)
+            {
+                spellList[i] = spellToSteal;
+                spellList[i].SetSpellbook(this);
+                emptySpellSlots--;
+                break;
+            }
+        }
+    }
+
+    public bool CheckForMatch(Spell spellToSteal)
+    {
         bool matched = false;
 
         // Check if we already have this spell, if so we add the casts together
@@ -73,31 +87,7 @@ public class Spellbook : MonoBehaviour
             }
         }
 
-        // Otherwise we add the spell to the spellbook
-        if (!matched)
-        {
-            if (emptySpellSlots == 0)
-            {
-                // TODO: call replace spell selection here
-                    // create UI event to prompt player to replace spell
-                    // enable playerInput to select a spell to discard
-                        // probably create a new Spellbook Page temporarily, then delete it once finished
-                    // instead, create a separate replacement function and call it from PlayerInput
-            }
-            else
-            {
-                for (int i = 0; i < spellList.Count; i++)
-                {
-                    if (spellList[i] == null)
-                    {
-                        spellList[i] = spellToSteal;
-                        spellList[i].SetSpellbook(this);
-                        emptySpellSlots--;
-                        break;
-                    }
-                }
-            }
-        }
+        return matched;
     }
 
     public void SpellExpires(Spell expiredSpell)
@@ -119,7 +109,7 @@ public class Spellbook : MonoBehaviour
             {
                 if (gameObject.GetComponent<PlayerInput>().CheckInCombat())
                 {
-                    StartCoroutine(GameManager.instance.GameOver());
+                    StartCoroutine(GameManager.instance.GameOver("You have no spells left..."));
                 }
             }
             else

@@ -8,11 +8,16 @@ public class SpellAnimator : MonoBehaviour
         Vector2 startPosition = caster.transform.position;
         Vector2 destination = target.transform.position;
 
-        Vector2 playerPosition = new Vector2(-4.5f, -3.5f);
-        Vector2 enemyPosition = new Vector2(4.5f, -3.5f);
+        Vector2 playerPosition = new Vector2(-4.5f, -4f);
+        Vector2 enemyPosition = new Vector2(4.5f, -4f);
 
         // instantiate sprite
-        GameObject spellSprite = GameObject.Instantiate(gameObject, startPosition, Quaternion.identity);
+        GameObject spellSprite = GameObject.Instantiate(gameObject, startPosition, gameObject.transform.rotation);
+        if (caster.CompareTag("Enemy"))
+        {
+            spellSprite.GetComponent<SpriteRenderer>().flipX = true;
+        }
+
         if (targetType == "All Enemies")
         {
             if (caster.CompareTag("Player"))
@@ -40,6 +45,12 @@ public class SpellAnimator : MonoBehaviour
         else if (targetType == "Single Target")
         {
             spellSprite.transform.position = target.transform.position;
+
+            float initialTime = Time.time;
+            while (Time.time - initialTime < duration)
+            {
+                yield return null;
+            }
         }
         else
         {

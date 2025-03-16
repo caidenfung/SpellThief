@@ -81,12 +81,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 2003921890983029265, guid: 4a5fea826b75e0d41bfb6665dde8f42c, type: 3}
+  m_Sprite: {fileID: -61740814147486778, guid: 36a01573a1eb7ff40a71a033d0bd06a2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
+  m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1.7, y: 2.06}
+  m_Size: {x: 1.46, y: 2.7}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -104,7 +104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 741544aa7ec360a48bbe4471ad6a0c00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  max_hp: 8
+  max_hp: 10
 --- !u!114 &5277147092151192791
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,8 +118,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spellList:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 1250546463373651292, guid: b596bd45bd410e84a8807f49c5bddd3e, type: 3}
   castsPerTurn: 1
 --- !u!114 &2545772655594298189
 MonoBehaviour:
@@ -147,7 +146,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f2c1963fea971946b3324fb4960688b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textPrefab: {fileID: 0}
+  textPrefab: {fileID: 5806616426848062917, guid: 0d989b7b7092927418068d6ca2d84079, type: 3}
   offsetMagnitude: 2
 --- !u!114 &8061324927009929709
 MonoBehaviour:
@@ -161,5 +160,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15e95b686fb5ca749993dbc2f854ad36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numFlickers: 3
-  intervalTime: 0.1
+  turnSprite: {fileID: -1957585620801309809, guid: 4b4d5e9fb89a70a4b96c9a9c80c7a3b1, type: 3}

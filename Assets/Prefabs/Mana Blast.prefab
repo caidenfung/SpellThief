@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccd2055a41177bd46ad6761141fec553, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxCasts: 5
+  maxCasts: 7
   spellName: Mana Blast
   targetType: Single Target
   effectType: Damage
